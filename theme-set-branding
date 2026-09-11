@@ -1,0 +1,73 @@
+#!/bin/bash
+# Apply MILC theme screensaver.txt and about.txt; restore previous branding
+# when switching away. Also sets fastfetch logo colors for olive / charcoal / drop.
+set -euo pipefail
+
+THEME="${1:-}"
+THEME_DIR="$HOME/.config/omarchy/themes/$THEME"
+BRAND_DIR="$HOME/.config/omarchy/branding"
+STATE_DIR="$HOME/.local/state/omarchy"
+FF_CONF="$HOME/.config/fastfetch/config.jsonc"
+FF_STOCK="/etc/fastfetch/config.jsonc"
+FF_STATE="$STATE_DIR/fastfetch-from-theme"
+
+mkdir -p "$STATE_DIR" "$BRAND_DIR" "$HOME/.config/fastfetch"
+
+apply_branding_file() {
+  local name="$1"
+  local src="$THEME_DIR/$name"
+  local dest="$BRAND_DIR/$name"
+  local user_save="$BRAND_DIR/${name%.txt}.user.txt"
+  local state="$STATE_DIR/${name%.txt}-from-theme"
+
+  if [[ -f $src ]]; then
+    if [[ ! -f $state && -f $dest ]]; then
+      cp "$dest" "$user_save"
+    fi
+    cp "$src" "$dest"
+    printf "%s\n" "$THEME" >"$state"
+  else
+    if [[ -f $state && -f $user_save ]]; then
+      cp "$user_save" "$dest"
+      rm -f "$state"
+    fi
+  fi
+}
+
+apply_fastfetch_colors() {
+  local charcoal
+  case "$THEME" in
+  milc-one)
+    charcoal="#353036"
+    ;;
+  milc-one-dark)
+    charcoal="#7d7880"
+    ;;
+  *)
+    if [[ -f $FF_STATE ]]; then
+      rm -f "$FF_CONF" "$FF_STATE"
+    fi
+    return 0
+    ;;
+  esac
+
+  if [[ -f $FF_STOCK ]]; then
+    python3 - "$FF_STOCK" "$FF_CONF" "$charcoal" <<'PY'
+import sys
+from pathlib import Path
+stock, dest, charcoal = sys.argv[1], sys.argv[2], sys.argv[3]
+text = Path(stock).read_text()
+old = '    "color": { "1": "green" },'
+new = f'    "color": {{ "1": "#5D820E", "2": "{charcoal}", "3": "#ffffff" }},'
+if old not in text:
+    raise SystemExit("fastfetch color line not found in stock config")
+Path(dest).write_text(text.replace(old, new, 1))
+PY
+    printf "%s\n" "$THEME" >"$FF_STATE"
+  fi
+}
+
+apply_branding_file screensaver.txt
+apply_branding_file about.txt
+apply_fastfetch_colors
+
