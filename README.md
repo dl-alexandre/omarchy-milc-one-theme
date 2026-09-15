@@ -12,14 +12,18 @@ omarchy theme install https://github.com/dl-alexandre/omarchy-milc-one-theme.git
 
 Or *Install > Style > Theme* and paste that URL.
 
-About (fastfetch) and screensaver art live in the theme but Omarchy applies branding globally. After install, once per machine:
+## About and screensaver
+
+Omarchy never applies a theme's About/fastfetch logo or screensaver by itself. A `theme-set` hook does that.
+
+You can have several theme-set hooks. There is only **one branding hook**, named `theme-set-branding`. This theme and the Alexandre Family Farm pair ship the same file, so install it **once per machine**:
 
 ```bash
 omarchy hook install theme-set ~/.config/omarchy/themes/milc-one/theme-set-branding
 omarchy theme set milc-one
 ```
 
-That copies the MILC mark into About, the TAAG “Milc Group” screensaver, and olive / charcoal / white fastfetch colors. Switching away restores your previous branding.
+After that, every theme switch runs it automatically. Do not reinstall it when changing light/dark or between MILC and AFF. Re-run `omarchy hook install` only if `theme-set-branding` in this repo changed.
 
 ## Preview
 
