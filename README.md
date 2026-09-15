@@ -1,6 +1,6 @@
 # MILC One
 
-Light [Omarchy](https://omarchy.org/) theme from [MILC Group](https://milcgroup.com/) / [ONE](https://dev.milcgroup.com/) — sage cream `#dee4d2`, forest green `#2f6f57`, olive `#5d820e`.
+Light [Omarchy](https://omarchy.org/) theme from [MILC Group](https://milcgroup.com/) — sage cream `#dee4d2`, forest green `#2f6f57`, olive `#5d820e`.
 
 Pair: [dark variant](https://github.com/dl-alexandre/omarchy-milc-one-dark-theme)
 
